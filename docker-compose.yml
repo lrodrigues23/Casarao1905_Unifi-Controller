@@ -1,0 +1,21 @@
+services:
+  unifi-controller:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: casarao1905-unifi-controller:latest
+    container_name: unifi-controller
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "127.0.0.1:8443:8443"
+      - "8843:8843"
+      - "8880:8880"
+      - "3478:3478/udp"
+      - "10001:10001/udp"
+      - "6789:6789"
+    volumes:
+      - unifi-config:/config
+
+volumes:
+  unifi-config:
