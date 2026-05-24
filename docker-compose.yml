@@ -3,8 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        UNIFI_VERSION: "8.0.24"
     image: casarao1905-unifi-controller:latest
     container_name: unifi-controller
     restart: unless-stopped

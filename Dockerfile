@@ -5,17 +5,26 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 # set version label
 ARG BUILD_DATE
 ARG VERSION
-ARG UNIFI_VERSION="8.0.24"
 LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="aptalca"
 
 # environment settings
-ARG UNIFI_BRANCH="stable"
 ARG DEBIAN_FRONTEND="noninteractive"
 
 COPY *.deb /tmp/unifi.deb
 
 RUN \
+  echo "**** add adoptium repository ****" && \
+  apt-get update && \
+  apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    gnupg && \
+  mkdir -p /etc/apt/keyrings && \
+  curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public \
+    | gpg --dearmor -o /etc/apt/keyrings/adoptium.gpg && \
+  echo "deb [signed-by=/etc/apt/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb focal main" \
+    > /etc/apt/sources.list.d/adoptium.list && \
   echo "**** install packages ****" && \
   apt-get update && \
   apt-get install -y --no-install-recommends \
@@ -24,7 +33,7 @@ RUN \
     libcap2 \
     logrotate \
     mongodb-server \
-    openjdk-17-jre-headless && \
+    temurin-25-jre && \
   echo "**** install local unifi package ****" && \
   mkdir -p /app && \
   apt-get install -y /tmp/unifi.deb && \
