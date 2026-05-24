@@ -5,7 +5,7 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:arm64v8-focal
 # set version label
 ARG BUILD_DATE
 ARG VERSION
-ARG UNIFI_VERSION
+ARG UNIFI_VERSION="8.0.24"
 LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="aptalca"
 
@@ -24,15 +24,18 @@ RUN \
     mongodb-server \
     openjdk-17-jre-headless && \
   echo "**** install unifi ****" && \
-  if [ -z ${UNIFI_VERSION+x} ]; then \
+  if [ -z "${UNIFI_VERSION}" ]; then \
     UNIFI_VERSION=$(curl -sX GET http://dl-origin.ubnt.com/unifi/debian/dists/${UNIFI_BRANCH}/ubiquiti/binary-amd64/Packages \
     |grep -A 7 -m 1 'Package: unifi' \
     | awk -F ': ' '/Version/{print $2;exit}' \
     | awk -F '-' '{print $1}'); \
   fi && \
+  if [ -z "${UNIFI_VERSION}" ]; then \
+    echo "Unable to determine UNIFI_VERSION" && exit 1; \
+  fi && \
   mkdir -p /app && \
-  curl -o \
-  /tmp/unifi.deb -L \
+  curl -fL -o \
+  /tmp/unifi.deb \
     "https://dl.ui.com/unifi/${UNIFI_VERSION}/unifi_sysvinit_all.deb" && \
   dpkg -i /tmp/unifi.deb && \
   echo "**** cleanup ****" && \
