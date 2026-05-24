@@ -13,6 +13,8 @@ LABEL maintainer="aptalca"
 ARG UNIFI_BRANCH="stable"
 ARG DEBIAN_FRONTEND="noninteractive"
 
+COPY *.deb /tmp/unifi.deb
+
 RUN \
   echo "**** install packages ****" && \
   apt-get update && \
@@ -23,20 +25,8 @@ RUN \
     logrotate \
     mongodb-server \
     openjdk-17-jre-headless && \
-  echo "**** install unifi ****" && \
-  if [ -z "${UNIFI_VERSION}" ]; then \
-    UNIFI_VERSION=$(curl -sX GET http://dl-origin.ubnt.com/unifi/debian/dists/${UNIFI_BRANCH}/ubiquiti/binary-amd64/Packages \
-    | grep -A 7 -m 1 'Package: unifi' \
-    | awk -F ': ' '/Version/{print $2;exit}' \
-    | awk -F '-' '{print $1}'); \
-  fi && \
-  if [ -z "${UNIFI_VERSION}" ]; then \
-    echo "Unable to determine UNIFI_VERSION" && exit 1; \
-  fi && \
+  echo "**** install local unifi package ****" && \
   mkdir -p /app && \
-  curl -fL -o \
-  /tmp/unifi.deb \
-    "https://dl.ui.com/unifi/${UNIFI_VERSION}/unifi_sysvinit_all.deb" && \
   apt-get install -y /tmp/unifi.deb && \
   rm -f /tmp/unifi.deb && \
   echo "**** cleanup ****" && \
