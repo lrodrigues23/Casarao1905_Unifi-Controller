@@ -1,6 +1,11 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
+# Linux container scripts must keep LF endings
+Dockerfile* text eol=lf
+docker-compose.yml text eol=lf
+root/etc/** text eol=lf
+
 # Custom for Visual Studio
 *.cs     diff=csharp
 

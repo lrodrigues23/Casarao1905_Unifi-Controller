@@ -47,6 +47,13 @@ RUN \
 
 # add local files
 COPY root/ /
+RUN \
+  chmod +x \
+    /etc/cont-init.d/99-deprecation \
+    /etc/s6-overlay/s6-rc.d/init-unifi-controller-config/run \
+    /etc/s6-overlay/s6-rc.d/init-unifi-controller-config/up \
+    /etc/s6-overlay/s6-rc.d/svc-unifi-controller/run \
+    /etc/s6-overlay/s6-rc.d/svc-unifi-controller/data/check
 
 # Volumes and Ports
 WORKDIR /usr/lib/unifi
